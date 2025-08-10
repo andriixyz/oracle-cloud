@@ -12,11 +12,13 @@ jobs:
             apt-get update && apt-get install -y python3-pip
             pip3 install oci-cli
       - run:
-          name: Terraform Init
-          command: terraform init
-      - run:
-          name: Terraform Apply
-          command: terraform apply -auto-approve
+          name: Deploy to all zones
+          command: |
+            zones=("NTeU:EU-FRANKFURT-1-AD-1" "NTeU:EU-FRANKFURT-1-AD-2" "NTeU:EU-FRANKFURT-1-AD-3")
+            for zone in "${zones[@]}"; do
+              terraform init
+              terraform apply -auto-approve -var="availability_domain=$zone" || continue
+            done
 
 workflows:
   version: 2
